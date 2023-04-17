@@ -1,4 +1,29 @@
-import cv2 
+import cv2 as cv
 
-#getting webcam input
-cam = cv2.VideoCapture(0)
+capture = cv.VideoCapture(0) #to open Camera
+
+#accessing pretrained model
+pretrained_model = cv.CascadeClassifier("face_detector.xml") 
+
+while True:
+    boolean, frame = capture.read()
+    if boolean == True:
+        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+
+        #pass in grayscale image, scale factor, and minimum neighbours
+        coordinate_list = pretrained_model.detectMultiScale(gray, 1.1, 3) 
+        
+        # drawing rectangle in frame
+        for (x,y,w,h) in coordinate_list:
+            cv.rectangle(frame, (x,y), (x+w, y+h), (0,255,0), 2)
+            
+        # Display detected face
+        cv.imshow("Live Face Detection", frame)
+        
+        # condition to break out of while loop
+        if cv.waitKey(20) == ord('x'):
+            break
+        
+capture.release()
+cv.destroyAllWindows()
+            
